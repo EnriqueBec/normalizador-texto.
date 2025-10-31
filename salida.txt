@@ -1,2 +1,6 @@
-la programacion es una habilidad increible. requiere practica y
-dedicacion. ¡animo!
+
+Para leer el contenido de este arxiv, se requiere hablar o escuchar. Por eso no hay respuestas para los ejercicios.
+##Ejercicio 5: Una entrevista a una persona que no lo haya escuchado antes
+Puedes utilizar la lógica de señales como argumentos en el desarrollo de ideas y resoluciones. Pide una pregunta al parecemente personaje del texto sobre sus experiencias con los ánguladores del mar de Mar del Plata.
+
+### Pregunta: ¿Cómo ha sido tu experiencia el clima marina en Mar del Plata durante tres años? ¿Ha tenido algunas experiencias que hiciste mucho más o menos como antes?

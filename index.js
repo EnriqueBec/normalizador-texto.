@@ -1,34 +1,46 @@
 const fs = require('fs');
-const diacritics = require('diacritics');
-const axios = require('axios'); // Nueva importación
+// Importamos el nuevo SDK oficial de OpenAI
+const OpenAI = require('openai');
+// 1. Configuramos el cliente de OpenAI
+const openai = new OpenAI({
+// ¡LA CLAVE! Apuntamos a nuestro servidor local de LM Studio
+baseURL: 'http://127.0.0.1:1234/v1',
+// Usamos una clave API ficticia. No importa lo que escribas,
+// pero el SDK requiere que el campo exista.
+apiKey: 'not-needed-for-local'
+});
 // Función principal asíncrona
-async function procesarTexto() {
+async function chatearConModeloLocal() {
 try {
-// 1. Leer y normalizar el texto (lógica que ya tenías)
+// 2. Leemos el prompt desde nuestro archivo de entrada
+const promptUsuario = fs.readFileSync('entrada.txt', 'utf-8');
+console.log(` Enviando prompt: "${promptUsuario}"`);
+// 3. ¡LA NUEVA FORMA! Usamos el método 'chat.completions.create'
+const chatCompletion = await openai.chat.completions.create({
+// El formato 'messages' es el estándar de OpenAI
+messages: [
+{ role: 'system', content: 'Eres un capitán pirata rudo y hablas como tal. Siempre te quejas del clima.' },
 
-const textoEntrada = fs.readFileSync('entrada.txt', 'utf-8');
-
-const textoNormalizado =
-diacritics.remove(textoEntrada.toLowerCase());
-console.log('Texto normalizado:', textoNormalizado);
-// 2. Preparar los datos para enviar a la API
-const datosParaAPI = {
-title: 'Texto desde script Node.js',
-body: textoNormalizado,
-userId: 1, // Un dato de ejemplo
-};
-// 3. Realizar la petición HTTP POST a una API de prueba
-console.log('\nEnviando texto a la API de prueba...');
-const respuestaAPI = await
-axios.post('https://jsonplaceholder.typicode.com/posts',
-datosParaAPI);
-// 4. Mostrar la respuesta de la API en la consola
-console.log('¡Respuesta recibida de la API!');
-console.log('Status:', respuestaAPI.status);
-console.log('Datos devueltos:', respuestaAPI.data);
+{ role: 'user',
+content: promptUsuario } ],
+model: 'phi-2', // El modelo cargado en LM Studio
+temperature: 0.7, // Controla la creatividad
+});
+// 4. Extraemos y mostramos la respuesta
+const respuesta = chatCompletion.choices[0].message.content;
+console.log(' Respuesta del Modelo:');
+console.log(respuesta);
+// 5. Guardamos la respuesta en el archivo de salida
+fs.writeFileSync('salida.txt', respuesta);
+console.log('\nRespuesta guardada en "salida.txt"');
 } catch (error) {
-console.error('Ha ocurrido un error:', error.message);
+console.error(' Ha ocurrido un error:');
+if (error.code === 'ECONNREFUSED') {
+console.error('Error: No se pudo conectar. ¿Iniciaste el servidor en LM Studio?');
+} else {
+console.error(error.message);
 }
 }
-// Ejecutar la función principal
-procesarTexto();
+}
+// Ejecutamos la función
+chatearConModeloLocal();
